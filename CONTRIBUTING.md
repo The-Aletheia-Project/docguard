@@ -5,7 +5,7 @@ Thanks for your interest. Every contribution makes this safer.
 ## Quick dev setup
 
 ```bash
-git clone https://github.com/knowledge-work-tools/docguard.git
+git clone https://github.com/the-aletheia-project/docguard.git
 cd docguard
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate

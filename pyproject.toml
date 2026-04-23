@@ -71,10 +71,10 @@ dev = [
 docguard = "docguard.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/knowledge-work-tools/docguard"
-Repository = "https://github.com/knowledge-work-tools/docguard"
-Issues = "https://github.com/knowledge-work-tools/docguard/issues"
-Changelog = "https://github.com/knowledge-work-tools/docguard/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/the-aletheia-project/docguard"
+Repository = "https://github.com/the-aletheia-project/docguard"
+Issues = "https://github.com/the-aletheia-project/docguard/issues"
+Changelog = "https://github.com/the-aletheia-project/docguard/blob/main/CHANGELOG.md"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/docguard"]

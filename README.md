@@ -1,5 +1,7 @@
 # docguard
 
+_A tool of **[The Aletheia Project](https://github.com/the-aletheia-project)** — un-concealing what is meant to stay hidden._
+
 > Your LLM just read "ignore previous instructions" in white-on-white text on page 3.
 
 `docguard` scrubs hidden prompt injections from `.docx` and `.pdf` files before you feed them to an LLM. Zero API key required — use your existing Claude/OpenAI subscription, your own API key, or run fully offline.
