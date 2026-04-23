@@ -88,7 +88,15 @@ def log_homoglyphs(text: str, report: UnicodeReport) -> None:
         from confusable_homoglyphs import confusables
     except ImportError:
         return  # optional dep, soft-fail
-    hits = confusables.is_dangerous(text, greedy=True) or []
+
+    # `is_confusable` returns a list of {character, alias, homoglyphs[]} dicts.
+    # The `greedy` kwarg (return every hit, not just the first) is supported in
+    # recent versions but may be absent in older ones — try with it, then without.
+    try:
+        hits = confusables.is_confusable(text, greedy=True) or []
+    except TypeError:
+        hits = confusables.is_confusable(text) or []
+
     seen: set[str] = set()
     for hit in hits:
         ch = hit.get("character")
