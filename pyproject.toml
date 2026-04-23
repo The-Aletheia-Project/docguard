@@ -1,0 +1,116 @@
+[build-system]
+requires = ["hatchling>=1.24"]
+build-backend = "hatchling.build"
+
+[project]
+name = "docguard"
+version = "0.1.0"
+description = "Scrub hidden prompt injections from .docx and .pdf before feeding them to an LLM."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [
+    { name = "Reza Bahramrad" },
+]
+keywords = [
+    "prompt-injection",
+    "llm-security",
+    "docx",
+    "pdf",
+    "sanitization",
+    "indirect-prompt-injection",
+    "ai-safety",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: Legal Industry",
+    "Intended Audience :: Education",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Security",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Text Processing :: Markup",
+]
+dependencies = [
+    "python-docx>=1.0.0",
+    "lxml>=4.9",
+]
+
+[project.optional-dependencies]
+pdf = ["pymupdf>=1.24", "pikepdf>=8.0"]
+homoglyphs = ["confusable-homoglyphs>=3.3"]
+anthropic = ["anthropic>=0.39"]
+openai = ["openai>=1.40"]
+ollama = ["ollama>=0.3"]
+all = [
+    "pymupdf>=1.24",
+    "pikepdf>=8.0",
+    "confusable-homoglyphs>=3.3",
+    "anthropic>=0.39",
+    "openai>=1.40",
+    "ollama>=0.3",
+]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=4.1",
+    "ruff>=0.6",
+    "mypy>=1.10",
+    "pymupdf>=1.24",
+    "pikepdf>=8.0",
+    "reportlab>=4.0",
+    "confusable-homoglyphs>=3.3",
+]
+
+[project.scripts]
+docguard = "docguard.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/knowledge-work-tools/docguard"
+Repository = "https://github.com/knowledge-work-tools/docguard"
+Issues = "https://github.com/knowledge-work-tools/docguard/issues"
+Changelog = "https://github.com/knowledge-work-tools/docguard/blob/main/CHANGELOG.md"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/docguard"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/tests",
+    "/tools",
+    "/docs",
+    "/examples",
+    "/README.md",
+    "/CHANGELOG.md",
+    "/LICENSE",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = [
+    "slow: marks tests that make network calls (deselect with '-m \"not slow\"')",
+    "pdf: marks tests that need pymupdf/pikepdf",
+    "claude_cli: marks tests that invoke the local `claude` CLI",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "C4", "SIM", "RUF"]
+ignore = ["E501"]  # line length handled by formatter
+
+[tool.mypy]
+python_version = "3.10"
+strict_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+no_implicit_optional = true
