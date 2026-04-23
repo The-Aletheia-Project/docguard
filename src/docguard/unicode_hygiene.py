@@ -129,4 +129,4 @@ def clean_parts(parts, report: UnicodeReport) -> None:
                 el.text = clean_text(el.text, report)
 
 
-__all__ = ["UnicodeReport", "clean_text", "log_homoglyphs", "clean_parts"]
+__all__ = ["UnicodeReport", "clean_parts", "clean_text", "log_homoglyphs"]

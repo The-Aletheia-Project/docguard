@@ -79,4 +79,4 @@ def _escape(s: str) -> str:
     return s.replace('"', "&quot;").replace("<", "&lt;").replace(">", "&gt;")
 
 
-__all__ = ["wrap", "SpotlightMode"]
+__all__ = ["SpotlightMode", "wrap"]

@@ -83,7 +83,7 @@ class RegexBackend:
     name = "regex"
     default_model = "regex-patterns-v1"
 
-    def available(self) -> bool:  # noqa: D401
+    def available(self) -> bool:
         return True
 
     def classify(self, text: str, model: str | None = None) -> list[SemanticFlag]:
@@ -111,4 +111,4 @@ class RegexBackend:
         return flags
 
 
-__all__ = ["RegexBackend", "PATTERNS"]
+__all__ = ["PATTERNS", "RegexBackend"]

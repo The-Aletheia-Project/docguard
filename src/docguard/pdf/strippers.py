@@ -11,12 +11,12 @@ clean, see `save_redacted` which applies true PDF redactions to hidden spans.
 
 from __future__ import annotations
 
+import contextlib
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 from docguard.pdf.extractors import (
-    Span,
     detect_invisible_ocgs,
     detect_javascript,
     document_metadata,
@@ -60,12 +60,10 @@ def _is_off_page(span_bbox, page_bbox) -> bool:
     px0, py0, px1, py1 = page_bbox
     if sx1 <= px0 or sx0 >= px1:
         return True
-    if sy1 <= py0 or sy0 >= py1:
-        return True
-    return False
+    return bool(sy1 <= py0 or sy0 >= py1)
 
 
-def scan_pdf(path: str | Path, config: PdfStripConfig | None = None) -> tuple[list[Finding], "fitz.Document"]:
+def scan_pdf(path: str | Path, config: PdfStripConfig | None = None) -> tuple[list[Finding], fitz.Document]:
     """Open the PDF, identify every hidden/suspicious element, return findings + doc.
 
     The returned doc has the in-memory state ready for redaction via `redact_and_save`.
@@ -187,7 +185,7 @@ def scan_pdf(path: str | Path, config: PdfStripConfig | None = None) -> tuple[li
 
 
 def clean_in_place(
-    doc: "fitz.Document",
+    doc: fitz.Document,
     findings: list[Finding],
     config: PdfStripConfig | None = None,
 ) -> None:
@@ -213,14 +211,14 @@ def clean_in_place(
             pnum = int(f.part.split()[1])
             page = doc[pnum - 1]
             page.add_redact_annot(fitz.Rect(*bbox), fill=(1, 1, 1))
-        except Exception:  # noqa: BLE001
+        except Exception:
             continue
 
     # 2. Apply redactions per page.
     for page in doc:
         try:
             page.apply_redactions()
-        except Exception:  # noqa: BLE001
+        except Exception:
             continue
 
     # 3. Remove annotations unless kept.
@@ -229,7 +227,7 @@ def clean_in_place(
             for annot in list(page.annots() or []):
                 try:
                     page.delete_annot(annot)
-                except Exception:  # noqa: BLE001
+                except Exception:
                     continue
 
     # 4. Remove form-field widgets unless kept.
@@ -240,30 +238,26 @@ def clean_in_place(
                     annot = widget._annot if hasattr(widget, "_annot") else None
                     if annot is not None:
                         page.delete_annot(annot)
-            except Exception:  # noqa: BLE001
+            except Exception:
                 pass
 
     # 5. Scrub metadata.
     if not config.keep_metadata:
-        try:
+        with contextlib.suppress(Exception):
             doc.set_metadata({})
-        except Exception:  # noqa: BLE001
-            pass
-        try:
+        with contextlib.suppress(Exception):
             doc.del_xml_metadata()
-        except Exception:  # noqa: BLE001
-            pass
 
     # 6. Remove embedded files.
     try:
         while doc.embfile_count():
             doc.embfile_del(0)
-    except Exception:  # noqa: BLE001
+    except Exception:
         pass
 
 
 def save_cleaned(
-    doc: "fitz.Document",
+    doc: fitz.Document,
     dest: str | Path,
     findings: list[Finding],
     config: PdfStripConfig | None = None,
@@ -288,4 +282,4 @@ def strip_all(path: str | Path, dest: str | Path | None = None,
     return findings, clean_text
 
 
-__all__ = ["PdfStripConfig", "scan_pdf", "save_cleaned", "strip_all"]
+__all__ = ["PdfStripConfig", "save_cleaned", "scan_pdf", "strip_all"]

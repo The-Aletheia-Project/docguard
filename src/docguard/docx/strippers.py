@@ -21,9 +21,9 @@ from typing import Any
 from lxml import etree
 
 from docguard.docx.extractors import (
-    DocxParts,
     NAMESPACES,
     TEXT_BEARING_PARTS,
+    DocxParts,
     build_style_vanish_map,
     find_alt_chunks,
     find_alternate_content,
@@ -151,7 +151,7 @@ def strip_alternate_content(parts: DocxParts, findings: list[Finding]) -> None:
     We trust the Choice branch (modern Word renders it) and throw away Fallback,
     which sneaky docs can populate differently.
     """
-    for part_path in TEXT_BEARING_PARTS + ("word/header1.xml", "word/footer1.xml"):
+    for part_path in (*TEXT_BEARING_PARTS, "word/header1.xml", "word/footer1.xml"):
         tree = parts.get(part_path)
         if tree is None:
             continue
@@ -276,7 +276,7 @@ def strip_off_page_textboxes(parts: DocxParts, findings: list[Finding]) -> None:
         return
     # Cheap heuristic: look for positionOffset values with unreasonably large magnitudes.
     # Word EMU: 914400 per inch; a page is typically ~7.5 inches wide => ~6_858_000 EMU.
-    THRESHOLD_EMU = 15_000_000  # ~16 inches offset = well off-page in any direction
+    threshold_emu = 15_000_000  # ~16 inches offset = well off-page in any direction
     for anchor in doc.iter(_q("wp:anchor")):
         bad = False
         for off in anchor.iter(_q("wp:positionOffset")):
@@ -284,7 +284,7 @@ def strip_off_page_textboxes(parts: DocxParts, findings: list[Finding]) -> None:
                 val = int((off.text or "0").strip())
             except ValueError:
                 continue
-            if abs(val) > THRESHOLD_EMU:
+            if abs(val) > threshold_emu:
                 bad = True
                 break
         if bad:

@@ -20,11 +20,11 @@ from docguard.types import (
 __version__ = "0.1.0"
 
 __all__ = [
-    "__version__",
-    "sanitize",
+    "Finding",
     "SanitizeConfig",
     "SanitizeResult",
     "SemanticFlag",
-    "Finding",
     "SpotlightMode",
+    "__version__",
+    "sanitize",
 ]

@@ -10,7 +10,7 @@ from docguard.types import SemanticFlag
 _PROMPT_PATH = Path(__file__).with_name("classifier_prompt.md")
 
 
-class BackendUnavailable(RuntimeError):
+class BackendUnavailableError(RuntimeError):
     """Raised when a backend's prerequisites aren't met."""
 
 
@@ -25,7 +25,7 @@ class SemanticBackend(Protocol):
         ...
 
     def classify(self, text: str, model: str | None = None) -> list[SemanticFlag]:
-        """Return flags for suspicious spans. Raise BackendUnavailable if preconditions fail."""
+        """Return flags for suspicious spans. Raise BackendUnavailableError if preconditions fail."""
         ...
 
 

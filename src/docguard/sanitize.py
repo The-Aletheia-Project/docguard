@@ -10,7 +10,6 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -22,13 +21,14 @@ from docguard.docx.extractors import (
     find_doc_variables,
     load_docx,
     save_docx,
-    walk_text_elements,
 )
-from docguard.docx.strippers import StripConfig, strip_all as docx_strip_all
+from docguard.docx.strippers import StripConfig
+from docguard.docx.strippers import strip_all as docx_strip_all
 from docguard.semantic.dispatcher import scan as semantic_scan
 from docguard.spotlight import wrap as spotlight_wrap
-from docguard.types import Finding, SanitizeConfig, SanitizeResult
-from docguard.unicode_hygiene import UnicodeReport, clean_parts, clean_text as clean_unicode, log_homoglyphs
+from docguard.types import SanitizeConfig, SanitizeResult
+from docguard.unicode_hygiene import UnicodeReport, clean_parts, log_homoglyphs
+from docguard.unicode_hygiene import clean_text as clean_unicode
 
 _W = NAMESPACES["w"]
 _M = NAMESPACES["m"]
@@ -232,4 +232,4 @@ def sanitize(
     return _sanitize_pdf(src, config, out)
 
 
-__all__ = ["sanitize", "SanitizeConfig", "SanitizeResult"]
+__all__ = ["SanitizeConfig", "SanitizeResult", "sanitize"]

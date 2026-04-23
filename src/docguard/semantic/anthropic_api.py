@@ -9,7 +9,7 @@ import json
 import os
 
 from docguard.semantic.base import (
-    BackendUnavailable,
+    BackendUnavailableError,
     load_classifier_prompt,
     wrap_user_input,
 )
@@ -34,11 +34,11 @@ class AnthropicBackend:
 
     def classify(self, text: str, model: str | None = None) -> list[SemanticFlag]:
         if not self.api_key:
-            raise BackendUnavailable("ANTHROPIC_API_KEY not set")
+            raise BackendUnavailableError("ANTHROPIC_API_KEY not set")
         try:
             from anthropic import Anthropic
         except ImportError as e:
-            raise BackendUnavailable(
+            raise BackendUnavailableError(
                 "anthropic SDK not installed — `pip install docguard[anthropic]`"
             ) from e
 

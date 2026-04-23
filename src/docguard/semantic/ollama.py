@@ -10,7 +10,7 @@ import json
 import os
 
 from docguard.semantic.base import (
-    BackendUnavailable,
+    BackendUnavailableError,
     load_classifier_prompt,
     wrap_user_input,
 )
@@ -33,14 +33,14 @@ class OllamaBackend:
             from ollama import Client
             Client(host=self.host).list()
             return True
-        except Exception:  # noqa: BLE001
+        except Exception:
             return False
 
     def classify(self, text: str, model: str | None = None) -> list[SemanticFlag]:
         try:
             from ollama import Client
         except ImportError as e:
-            raise BackendUnavailable(
+            raise BackendUnavailableError(
                 "ollama SDK not installed — `pip install docguard[ollama]`"
             ) from e
 
@@ -55,8 +55,8 @@ class OllamaBackend:
                 format="json",
                 options={"temperature": 0},
             )
-        except Exception as e:  # noqa: BLE001
-            raise BackendUnavailable(f"ollama call failed: {e}") from e
+        except Exception as e:
+            raise BackendUnavailableError(f"ollama call failed: {e}") from e
 
         raw = resp.get("message", {}).get("content", "{}")
         return _parse_reply(raw, source=self.name)

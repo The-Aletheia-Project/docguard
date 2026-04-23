@@ -6,7 +6,7 @@ import json
 import os
 
 from docguard.semantic.base import (
-    BackendUnavailable,
+    BackendUnavailableError,
     load_classifier_prompt,
     wrap_user_input,
 )
@@ -31,11 +31,11 @@ class OpenAIBackend:
 
     def classify(self, text: str, model: str | None = None) -> list[SemanticFlag]:
         if not self.api_key:
-            raise BackendUnavailable("OPENAI_API_KEY not set")
+            raise BackendUnavailableError("OPENAI_API_KEY not set")
         try:
             from openai import OpenAI
         except ImportError as e:
-            raise BackendUnavailable(
+            raise BackendUnavailableError(
                 "openai SDK not installed — `pip install docguard[openai]`"
             ) from e
 

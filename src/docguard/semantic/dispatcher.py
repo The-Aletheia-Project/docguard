@@ -14,7 +14,7 @@ from __future__ import annotations
 import os
 
 from docguard.semantic.anthropic_api import AnthropicBackend
-from docguard.semantic.base import BackendUnavailable, SemanticBackend
+from docguard.semantic.base import BackendUnavailableError, SemanticBackend
 from docguard.semantic.claude_cli import ClaudeCliBackend
 from docguard.semantic.ollama import OllamaBackend
 from docguard.semantic.openai_api import OpenAIBackend
@@ -37,7 +37,7 @@ def available_backends() -> list[str]:
         try:
             if cls().available():
                 out.append(name)
-        except Exception:  # noqa: BLE001
+        except Exception:
             continue
     return out
 
@@ -55,7 +55,7 @@ def get_backend(name: str | None = None) -> SemanticBackend:
             )
         backend = cls()
         if not backend.available():
-            raise BackendUnavailable(
+            raise BackendUnavailableError(
                 f"Backend '{name}' is not available on this machine."
             )
         return backend
@@ -96,7 +96,7 @@ def scan(
 
     try:
         backend = get_backend(backend_name)
-    except BackendUnavailable as e:
+    except BackendUnavailableError as e:
         return flags, "regex", str(e)
 
     # If the dispatcher fell back to regex, skip running it again.
@@ -106,9 +106,9 @@ def scan(
     try:
         flags.extend(backend.classify(snippet, model=model))
         return flags, backend.name, None
-    except BackendUnavailable as e:
+    except BackendUnavailableError as e:
         return flags, backend.name, str(e)
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:
         return flags, backend.name, f"{type(e).__name__}: {e}"
 
 

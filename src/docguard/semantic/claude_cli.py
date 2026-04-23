@@ -10,7 +10,7 @@ import json
 import subprocess
 
 from docguard.semantic.base import (
-    BackendUnavailable,
+    BackendUnavailableError,
     load_classifier_prompt,
     wrap_user_input,
 )
@@ -55,12 +55,12 @@ class ClaudeCliBackend:
                 errors="replace",
             )
         except FileNotFoundError as e:
-            raise BackendUnavailable("`claude` CLI not found on PATH") from e
+            raise BackendUnavailableError("`claude` CLI not found on PATH") from e
         except subprocess.TimeoutExpired as e:
-            raise BackendUnavailable(f"claude CLI timed out after {self.timeout}s") from e
+            raise BackendUnavailableError(f"claude CLI timed out after {self.timeout}s") from e
 
         if result.returncode != 0:
-            raise BackendUnavailable(
+            raise BackendUnavailableError(
                 f"claude CLI exit {result.returncode}: {result.stderr[:300]}"
             )
 

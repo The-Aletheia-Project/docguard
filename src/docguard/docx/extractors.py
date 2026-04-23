@@ -9,9 +9,9 @@ This module walks the full .docx ZIP and exposes every part as lxml trees.
 from __future__ import annotations
 
 import zipfile
+from collections.abc import Iterator
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Iterator
 
 from lxml import etree
 
@@ -114,8 +114,7 @@ TEXT_TAGS = (_q("w:t"), _q("w:instrText"), _q("m:t"))
 
 def walk_runs(tree: etree._ElementTree) -> Iterator[etree._Element]:
     """Yield every w:r element in document order."""
-    for r in tree.iter(_q("w:r")):
-        yield r
+    yield from tree.iter(_q("w:r"))
 
 
 def walk_text_elements(tree: etree._ElementTree) -> Iterator[etree._Element]:
@@ -264,18 +263,18 @@ def build_style_vanish_map(parts: DocxParts) -> dict[str, bool]:
 
 __all__ = [
     "NAMESPACES",
+    "TEXT_BEARING_PARTS",
     "DocxParts",
+    "build_style_vanish_map",
+    "find_alt_chunks",
+    "find_alternate_content",
+    "find_attached_template",
+    "find_custom_xml_parts",
+    "find_doc_variables",
     "load_docx",
+    "paragraph_of",
+    "run_text",
     "save_docx",
     "walk_runs",
     "walk_text_elements",
-    "run_text",
-    "paragraph_of",
-    "find_alt_chunks",
-    "find_alternate_content",
-    "find_custom_xml_parts",
-    "find_doc_variables",
-    "find_attached_template",
-    "build_style_vanish_map",
-    "TEXT_BEARING_PARTS",
 ]

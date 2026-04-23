@@ -21,7 +21,6 @@ from __future__ import annotations
 
 import argparse
 import glob
-import json
 import sys
 import traceback
 from pathlib import Path
@@ -141,7 +140,7 @@ def main(argv: list[str] | None = None) -> int:
                 f"llm={row['llm_flags']}{flag}"
             )
             append_summary(summary_path, row)
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             errs += 1
             print(f"{prefix} {src.name}: ERROR — {e}", file=sys.stderr)
             traceback.print_exc()

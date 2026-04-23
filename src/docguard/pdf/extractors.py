@@ -34,16 +34,16 @@ class Span:
     page_bbox: tuple[float, float, float, float]  # the page CropBox
 
 
-def load_pdf(path: str | Path) -> "fitz.Document":
+def load_pdf(path: str | Path) -> fitz.Document:
     return fitz.open(str(path))
 
 
-def iter_spans(doc: "fitz.Document") -> list[Span]:
+def iter_spans(doc: fitz.Document) -> list[Span]:
     """Walk every text span across every page."""
     out: list[Span] = []
     for pnum, page in enumerate(doc, start=1):
         raw = page.get_text("rawdict")
-        page_bbox = tuple(page.rect)  # noqa: RUF005
+        page_bbox = tuple(page.rect)
         for block in raw.get("blocks", []):
             for line in block.get("lines", []):
                 for span in line.get("spans", []):
@@ -71,7 +71,7 @@ def iter_spans(doc: "fitz.Document") -> list[Span]:
     return out
 
 
-def extract_text(doc: "fitz.Document") -> str:
+def extract_text(doc: fitz.Document) -> str:
     """Visible-order plain text — what a reader sees when viewing the PDF."""
     pages = []
     for page in doc:
@@ -79,19 +79,19 @@ def extract_text(doc: "fitz.Document") -> str:
     return "\n\n".join(pages).strip()
 
 
-def document_metadata(doc: "fitz.Document") -> dict[str, Any]:
+def document_metadata(doc: fitz.Document) -> dict[str, Any]:
     """Standard and XMP metadata."""
     meta = dict(doc.metadata or {})
     try:
         xml = doc.get_xml_metadata()  # pymupdf method
         if xml:
             meta["xmp"] = xml
-    except Exception:  # noqa: BLE001
+    except Exception:
         pass
     return meta
 
 
-def list_annotations(doc: "fitz.Document") -> list[dict[str, Any]]:
+def list_annotations(doc: fitz.Document) -> list[dict[str, Any]]:
     """Collect annotation contents — comments, notes, markup text."""
     out = []
     for pnum, page in enumerate(doc, start=1):
@@ -104,7 +104,7 @@ def list_annotations(doc: "fitz.Document") -> list[dict[str, Any]]:
     return out
 
 
-def list_widgets(doc: "fitz.Document") -> list[dict[str, Any]]:
+def list_widgets(doc: fitz.Document) -> list[dict[str, Any]]:
     """Collect form-field values and defaults."""
     out = []
     for pnum, page in enumerate(doc, start=1):
@@ -120,12 +120,12 @@ def list_widgets(doc: "fitz.Document") -> list[dict[str, Any]]:
     return out
 
 
-def list_embedded_files(doc: "fitz.Document") -> list[dict[str, Any]]:
+def list_embedded_files(doc: fitz.Document) -> list[dict[str, Any]]:
     """Attached / embedded files."""
     out = []
     try:
         count = doc.embfile_count()
-    except Exception:  # noqa: BLE001
+    except Exception:
         return out
     for i in range(count):
         try:
@@ -135,34 +135,34 @@ def list_embedded_files(doc: "fitz.Document") -> list[dict[str, Any]]:
                 "size": info.get("size", 0),
                 "desc": info.get("desc", ""),
             })
-        except Exception:  # noqa: BLE001
+        except Exception:
             continue
     return out
 
 
-def detect_javascript(doc: "fitz.Document") -> list[str]:
+def detect_javascript(doc: fitz.Document) -> list[str]:
     """Any /JavaScript actions in the document. We flag presence only."""
     hits: list[str] = []
     try:
         xref_count = doc.xref_length()
-    except Exception:  # noqa: BLE001
+    except Exception:
         return hits
     for xref in range(1, xref_count):
         try:
             js = doc.xref_get_key(xref, "JS") if hasattr(doc, "xref_get_key") else None
-        except Exception:  # noqa: BLE001
+        except Exception:
             js = None
         if js and js[0] != "null":
             hits.append(f"xref {xref}: /JS key present")
     return hits
 
 
-def detect_invisible_ocgs(doc: "fitz.Document") -> list[dict[str, Any]]:
+def detect_invisible_ocgs(doc: fitz.Document) -> list[dict[str, Any]]:
     """Optional Content Groups (layers) marked off by default."""
     out: list[dict[str, Any]] = []
     try:
         ocg_cfg = doc.get_ocgs()
-    except Exception:  # noqa: BLE001
+    except Exception:
         return out
     for xref, info in (ocg_cfg or {}).items():
         # info is a dict like {"name": ..., "on": bool, ...}
@@ -173,13 +173,13 @@ def detect_invisible_ocgs(doc: "fitz.Document") -> list[dict[str, Any]]:
 
 __all__ = [
     "Span",
-    "load_pdf",
-    "iter_spans",
-    "extract_text",
-    "document_metadata",
-    "list_annotations",
-    "list_widgets",
-    "list_embedded_files",
-    "detect_javascript",
     "detect_invisible_ocgs",
+    "detect_javascript",
+    "document_metadata",
+    "extract_text",
+    "iter_spans",
+    "list_annotations",
+    "list_embedded_files",
+    "list_widgets",
+    "load_pdf",
 ]

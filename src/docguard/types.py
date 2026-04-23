@@ -76,9 +76,7 @@ class SanitizeResult:
         """True if any high-confidence signal fired."""
         if any(f.action == "stripped" for f in self.structural_findings):
             return True
-        if any(f.confidence >= 0.5 for f in self.semantic_flags):
-            return True
-        return False
+        return bool(any(f.confidence >= 0.5 for f in self.semantic_flags))
 
     def to_dict(self) -> dict[str, Any]:
         return {
